@@ -1,23 +1,37 @@
 import re
 import os
+import io
+import math
+from time import sleep
 from pathlib import Path
 
 import requests
+from PIL import Image
+import filetype
 
 from rowdo.logging import logger
 import rowdo.config as config
 import rowdo.database
 
 
+class ResizeException(Exception):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, *kwargs)
+        self.msg = args[0]
+
+
 class Watcher:
     def __init__(self, db: rowdo.database.Database):
         self.db = db
+        self.keep_loop = True
 
         allow_from = config.get('download', 'allow_from').split(',')
         disallow_from = config.get('download', 'disallow_from').split(',')
         allow_formats = config.get('download', 'allow_formats_url').split(',')
+        allow_mimes = config.get('download', 'allow_mime_types').split(',')
         self.allowed_urls_r = self.create_url_regexes(allow_from, allow_formats)
         self.disallowed_urls_r = self.create_url_regexes(disallow_from)
+        self.allowed_mime_types = allow_mimes
 
         self.download_path = config.get('download', 'path')
         Path(self.download_path).mkdir(parents=True, exist_ok=True)
@@ -60,17 +74,18 @@ class Watcher:
         return regexes
 
     def routine(self):
+        logger.debug('Running routine.')
         runtime = self.db.get_runtime()
 
         last_checked_timestamp = None
         if runtime:
             last_checked_timestamp = runtime.get('last_checked_timestamp')
 
-        rows = self.db.read_file_rows(status=0, last_checked_timestamp=last_checked_timestamp)
-
+        rows = self.db.read_file_rows(status=rowdo.database.STATUS_WAITING_TO_PROCESS, last_checked_timestamp=last_checked_timestamp)
+        logger.debug(rows)
         for row in rows:
             self.db.update_file_row(row['id'], {
-                "status": rowdo.database.STATUS_PROCESSING
+                "status": 0  # ! DEBUG ONLY rowdo.database.STATUS_PROCESSING
             })
 
             if row['command'] == rowdo.database.COMMAND_DOWNLOAD:
@@ -78,8 +93,25 @@ class Watcher:
                 if downloaded_info:
                     self.db.update_file_row(row['id'], {
                         "status": 0,  # ! DEBUG ONLY rowdo.database.STATUS_DONE
-                        "path": downloaded_info['relative_path'] if self.keep_relative_path else downloaded_info['full_path']
+                        "path": downloaded_info['relative_path'] if self.keep_relative_path else downloaded_info['full_path'],
+                        "filename": downloaded_info['filename']
                     })
+            elif row['command'] == rowdo.database.COMMAND_DELETE_ROW_ONLY:
+                self.db.delete_file_row(row['id'])
+            elif row['command'] == rowdo.database.COMMAND_DELETE_FILE_ONLY:
+                self.delete_file(row)
+                self.db.update_file_row(row['id'], {
+                    "status": rowdo.database.STATUS_DONE,
+                    "path": None,
+                    "filename": None
+                })
+            elif row['command'] == rowdo.database.COMMAND_DELETE:
+                self.delete_file(row)
+                self.db.delete_file_row(row['id'])
+            elif row['command'] == rowdo.database.COMMAND_IDLE:
+                self.db.update_file_row(row['id'], {
+                    "status": rowdo.database.STATUS_DONE
+                })
 
             self.db.set_runtime({
                 'last_checked_timestamp': row['updated_at'].isoformat()
@@ -108,11 +140,15 @@ class Watcher:
             self.register_error(row, description='REQUESTS ERROR')
             self.register_error(row, err)
 
-    def get_filename(self, row, req):
+    def get_filename(self, row, req=False):
         if row['filename']:
-            filename = f"{row['filename']}.{row['url'].rsplit('.', 1)[1]}"
+            if '.' not in row['filename']:
+                filename = f"{row['filename']}.{row['url'].rsplit('.', 1)[1]}"
+            else:
+                filename = row['filename']
+
             return filename
-        else:
+        elif req:
             try:
                 url_last_part = row['url'].rsplit('/', 1)[1]
                 filename = self.get_filename_from_cd(req.headers.get('content-disposition'), url_last_part)
@@ -121,6 +157,18 @@ class Watcher:
                 self.register_error(row, description=f'Couldn\'t get the filename for url: {row["url"]}')
                 self.register_error(row, err)
                 return
+        else:
+            raise Exception('Cannot obtain filename.')
+
+    def delete_file(self, row):
+        filename = self.get_filename(row)
+        if not filename:
+            return
+
+        full_path = self.get_download_path(filename)
+
+        if os.path.exists(full_path):
+            os.remove(full_path)
 
     def download_file(self, row):
         if not self.url_check(row['url']):
@@ -135,17 +183,43 @@ class Watcher:
         if not req:
             return
 
+        if '*' not in self.allowed_mime_types:
+            h_content_type = req.headers.get('Content-Type', False)
+            if h_content_type and h_content_type not in self.allowed_mime_types and False:
+                self.register_error(row, f'URL is not downloadable mime type (found {h_content_type}).: {row["url"]}')
+                return
+
+            content_type = filetype.guess_mime(req.content)
+            if content_type not in self.allowed_mime_types:
+                self.register_error(row, f'Downloaded bytes is not whitelisted mime type (found {content_type}).: {row["url"]}')
+                return
+
         filename = self.get_filename(row, req)
         if not filename:
             return
 
-        if ':' in self.download_path or '~' in self.download_path:
-            full_path = os.path.join(self.download_path, filename)
-        else:
-            full_path = os.path.join(os.getcwd(), self.download_path, filename)
+        full_path = self.get_download_path(filename)
 
         try:
-            open(full_path, 'wb').write(req.content)
+            if row['resize_mode'] == rowdo.database.RESIZE_NONE:
+                file_to_save = req.content
+            elif row['resize_mode'] == rowdo.database.RESIZE_PASSTHROUGH:
+                file_to_save = self.resize_image(req.content, 'RATIO', 1)
+            elif row['resize_mode'] == rowdo.database.RESIZE_RATIO:
+                file_to_save = self.resize_image(req.content, 'RATIO', float(row['resize_ratio']))
+            elif row['resize_mode'] == rowdo.database.RESIZE_DIMENSIONS:
+                file_to_save = self.resize_image(req.content, 'DIMENSIONS', row['resize_width'], row['resize_height'])
+            else:
+                self.register_error(row, description='Invalid resize mode.', mark_error=True)
+        except ResizeException as exc:
+            self.register_error(row, exc)
+            return
+
+        try:
+            if getattr(file_to_save, 'save', False):
+                file_to_save.save(full_path)  # PIL
+            else:
+                open(full_path, 'wb').write(file_to_save)
         except OSError as err:
             self.register_error(row, description=f'Couldn\'t open the path {full_path}', mark_error=False)
             self.register_error(row, err, mark_error=False)
@@ -156,6 +230,14 @@ class Watcher:
             "full_path": full_path,
             "relative_path": f"{self.download_path}/{filename}"
         }
+
+    def get_download_path(self, filename):
+        if ':' in self.download_path or '~' in self.download_path:
+            full_path = os.path.join(self.download_path, filename)
+        else:
+            full_path = os.path.join(os.getcwd(), self.download_path, filename)
+
+        return full_path
 
     @staticmethod
     def is_downloadable(url):
@@ -183,9 +265,39 @@ class Watcher:
             return default
         return file_name[0]
 
+    @staticmethod
+    def resize_image(image_bytes, mode, *args):
+        img = Image.open(io.BytesIO(image_bytes))
+        print(args)
+        if mode == 'RATIO':
+            if len(args) < 1 or not args[0]:  # In case it is None or zero.
+                raise ResizeException('Resize ratio was missing.')
+
+            width = math.ceil(img.width * args[0])
+            height = math.ceil(img.height * args[0])
+            img = img.resize((width, height))
+
+        if mode == 'DIMENSIONS':
+            if len(args) < 2:
+                raise ResizeException('Resize width or height was missing.')
+
+            if not (args[0] and args[1]):
+                raise ResizeException('Resize width or height is zero.')
+
+            img = img.resize((args[0], args[1]))
+
+        return img
+
     def register_error(self, row, description='', mark_error=True):
         logger.error(description)
         if mark_error:
             self.db.update_file_row(row['id'], {
                 'status': rowdo.database.STATUS_ERROR
             })
+
+    def loop(self):
+        run_every_seconds = int(config.get('runtime', 'run_every_seconds'))
+        while self.keep_loop:
+            self.routine()
+            for i in range(run_every_seconds * 10):
+                sleep(0.1)

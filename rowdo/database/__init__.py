@@ -17,6 +17,11 @@ STATUS_PROCESSING = 1
 STATUS_DONE = 2
 STATUS_ERROR = 3
 
+RESIZE_NONE = -1
+RESIZE_PASSTHROUGH = 0
+RESIZE_DIMENSIONS = 1
+RESIZE_RATIO = 2
+
 
 class Database:
     def __init__(self):
@@ -41,9 +46,9 @@ class Database:
                     'type': 'TEXT',
                     'NULL': True
                 },
-                'resize': {
-                    'type': 'DECIMAL',
-                    'DEFAULT': '0'
+                'resize_mode': {
+                    'type': 'INT',
+                    'DEFAULT': '-1'
                 },
                 'resize_width': {
                     'type': 'INT',
@@ -51,6 +56,10 @@ class Database:
                 },
                 'resize_height': {
                     'type': 'INT',
+                    'NULL': True
+                },
+                'resize_ratio': {
+                    'type': 'DECIMAL(10,5)',
                     'NULL': True
                 },
                 'command': {
@@ -112,6 +121,7 @@ class Database:
         with self.cursor() as cursor:
             cursor.execute(sql)
             db_tables_tuples = cursor.fetchall()
+            self.cnx.commit()
             db_tables = [c[0] for c in db_tables_tuples]
 
             for table_name in self.tables.keys():
@@ -154,6 +164,7 @@ class Database:
         logger.info(f'Creating table {table_name}\n{sql}')
         with self.cursor() as cursor:
             cursor.execute(sql)
+            self.cnx.commit()
 
     def read_file_rows(self, status=0, last_checked_timestamp: datetime = None):
         ts_check = ''
@@ -163,11 +174,13 @@ class Database:
         ts_check = ''  # ! For debug only
 
         sql = f'SELECT * FROM {self._prefix}_files WHERE status = {status}{ts_check} ORDER BY updated_at ASC'
+        print(sql)
         files = []
         with self.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute(sql)
                 files = cursor.fetchall()
+                self.cnx.commit()
             except Error as err:
                 logger.error(err)
                 logger.debug(cursor.statement)
@@ -194,6 +207,19 @@ class Database:
                 logger.error(err)
                 raise err
 
+    def delete_file_row(self, id):
+        query_data = {
+            'id': id
+        }
+        sql = f"DELETE FROM {self._prefix}_files WHERE id = %(id)s"
+        with self.cursor() as cursor:
+            try:
+                cursor.execute(sql, query_data)
+                self.cnx.commit()
+            except Error as err:
+                logger.error(err)
+                raise err
+
     def set_runtime(self, fields_and_values: dict):
         fields_and_values['id'] = 1
         sql = f"REPLACE INTO {self._prefix}_runtime ({', '.join(fields_and_values.keys())}) VALUES ({', '.join([f'%({key})s' for key in fields_and_values.keys()])})"
@@ -211,7 +237,9 @@ class Database:
         with self.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute(sql)
-                return cursor.fetchone()
+                runtime = cursor.fetchone()
+                self.cnx.commit()
+                return runtime
             except Error as err:
                 logger.error(err)
                 logger.debug(cursor.statement)

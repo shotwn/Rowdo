@@ -15,7 +15,8 @@ CONFIG.read('./config.ini')
 
 DEFAULTS = {
     "runtime": {
-        "debug": False
+        "debug": False,
+        "run_every_seconds": 10
     },
     "database": {
         "table_prefix": "rowdo"
@@ -26,7 +27,8 @@ DEFAULTS = {
         "allow_formats_url": "*",
         "enabled": True,
         "path": os.path.join('files'),
-        "keep_relative_path": False
+        "keep_relative_path": False,
+        "allow_mime_types": "*"
     }
 }
 
