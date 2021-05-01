@@ -19,7 +19,8 @@ DEFAULTS = {
         "run_every_seconds": 10
     },
     "database": {
-        "table_prefix": "rowdo"
+        "table_prefix": "rowdo",
+        "url": False
     },
     "download": {
         "disallow_from": "",

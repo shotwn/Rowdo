@@ -1,10 +1,13 @@
 from datetime import datetime
 
-from mysql.connector import connect, Error
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import sessionmaker, declarative_base
+
 
 from rowdo.logging import logger
 import rowdo.config as config
 
+import rowdo.database.tables
 
 COMMAND_IDLE = 0
 COMMAND_DOWNLOAD = 1
@@ -25,222 +28,96 @@ RESIZE_RATIO = 2
 
 class Database:
     def __init__(self):
-        self.connected = False
         self._prefix = config.get('database', 'table_prefix')
-        self.tables = {
-            f'{self._prefix}_files': {
-                'id': {
-                    'type': 'INT',
-                    'KEY': 'PRIMARY KEY',
-                    'NULL': False,
-                    'AUTO INCREMENT': True
-                },
-                'url': {
-                    'type': 'TEXT'
-                },
-                'path': {
-                    'type': 'TEXT',
-                    'NULL': True
-                },
-                'filename': {
-                    'type': 'TEXT',
-                    'NULL': True
-                },
-                'resize_mode': {
-                    'type': 'INT',
-                    'DEFAULT': '-1'
-                },
-                'resize_width': {
-                    'type': 'INT',
-                    'NULL': True
-                },
-                'resize_height': {
-                    'type': 'INT',
-                    'NULL': True
-                },
-                'resize_ratio': {
-                    'type': 'DECIMAL(10,5)',
-                    'NULL': True
-                },
-                'command': {
-                    'type': 'INT',
-                    'DEFAULT': '1'  # 0: do nothing, 1: download, 2:delete_all, 3: delete_file, 4:delete_row
-                },
-                'status': {
-                    'type': 'INT',
-                    'DEFAULT': '0'
-                },
-                'preset_id': {
-                    'type': 'INT',
-                    'DEFAULT': '-1'
-                },
-                'created_at': {
-                    'type': 'TIMESTAMP',
-                    'DEFAULT': 'CURRENT_TIMESTAMP'
-                },
-                'updated_at': {
-                    'type': 'TIMESTAMP',
-                    'DEFAULT': 'CURRENT_TIMESTAMP',
-                    'ATTRIBUTES': 'on update CURRENT_TIMESTAMP'
-                }
-            },
-            f'{self._prefix}_runtime': {
-                'id': {
-                    'type': 'INT',
-                    'KEY': 'PRIMARY KEY',
-                    'NULL': False
-                },
-                'last_checked_timestamp': {
-                    'type': 'TIMESTAMP',
-                    'NULL': True
-                }
-            }
-        }
+        connect_url = config.get('database', 'url')
+        if not connect_url:
+            host = config.get('database', 'host')
+            user = config.get('database', 'user')
+            password = config.get('database', 'password')
+            database = config.get('database', 'database')
 
-    def connect(self, check_tables=True):
-        logger.info('Connecting database...')
-        self.cnx = connect(
-            host=config.get('database', 'host'),
-            user=config.get('database', 'user'),
-            password=config.get('database', 'password'),
-            database=config.get('database', 'database')
-        )
+            connect_url = f"mysql://{user}:{password}@{host}/{database}"
+        self._engine = create_engine(connect_url, echo=False, future=True, encoding='utf-8')
 
-        self.cursor = self.cnx.cursor
-        self.connected = True
+        self._session_maker = sessionmaker(bind=self._engine)
+        self._declarative_base = declarative_base()
 
-        if check_tables:
-            self.check_tables()
+        self.tables = {}
+        for module in rowdo.database.tables.modules:
+            orm_class = module.declare(self._declarative_base, self._prefix)
+            name = module.TABLE_NAME
+            self.tables[name] = orm_class
 
-    def connect_if_not_connected(self):
-        if not self.connected:
-            self.connect()
+        self._declarative_base.metadata.create_all(self._engine)
+        self._session = None
 
-    def check_tables(self):
-        sql = 'SHOW TABLES'
-        with self.cursor() as cursor:
-            cursor.execute(sql)
-            db_tables_tuples = cursor.fetchall()
-            self.cnx.commit()
-            db_tables = [c[0] for c in db_tables_tuples]
+    def get_table(self, name):
+        return self.tables[name]
 
-            for table_name in self.tables.keys():
-                if not db_tables or table_name not in db_tables:
-                    self.create_table(table_name)
-            logger.info('Tables checked.')
+    def session(self):
+        if not self._session:
+            self.begin_session()
 
-    def create_table(self, table_name):
-        table_structure = self.tables[table_name]
-        columns = []
-        keys = []
-        for member_name, member in table_structure.items():
-            fields = []
+        return self._session
 
-            fields.append(f'`{member_name}` {member["type"]}')
+    def begin_session(self):
+        self._session = self._session_maker()
 
-            if member.get('ATTRIBUTES'):
-                fields.append(member.get('ATTRIBUTES'))
+    def close_session(self):
+        if not self._session:
+            self._session.close()
+            self._session = None
 
-            fields.append('NULL' if member.get('NULL') else 'NOT NULL')
-
-            if member.get('AUTO INCREMENT'):
-                fields.append('AUTO_INCREMENT')
-
-            default = member.get('DEFAULT')
-            if default or isinstance(default, bool):
-                if default in ['CURRENT_TIMESTAMP', 'NULL'] or isinstance(default, bool):
-                    fields.append(f'DEFAULT {str(default).upper()}')
-                else:
-                    fields.append(f'DEFAULT \'{default}\'')
-
-            if member.get('KEY'):
-                keys.append(f'{member.get("KEY")} (`{member_name}`)')
-
-            columns.append(' '.join(fields))
-
-        # This is all internal, don't expect sql injection
-        sql = f'CREATE TABLE {table_name} ({", ".join(columns + keys)}) ENGINE = InnoDB;'
-
-        logger.info(f'Creating table {table_name}\n{sql}')
-        with self.cursor() as cursor:
-            cursor.execute(sql)
-            self.cnx.commit()
-
-    def read_file_rows(self, status=0, last_checked_timestamp: datetime = None):
-        ts_check = ''
-        if last_checked_timestamp:
-            ts_check = f" AND updated_at > '{last_checked_timestamp.isoformat()}'"
-
-        ts_check = ''  # ! For debug only
-
-        sql = f'SELECT * FROM {self._prefix}_files WHERE status = {status}{ts_check} ORDER BY updated_at ASC'
-        print(sql)
-        files = []
-        with self.cursor(dictionary=True) as cursor:
-            try:
-                cursor.execute(sql)
-                files = cursor.fetchall()
-                self.cnx.commit()
-            except Error as err:
-                logger.error(err)
-                logger.debug(cursor.statement)
-                raise err
-
-        return files
-
-    def update_file_row(self, id, fields_and_values: dict):
-        update_str = []
-        update_data = {
-            'id': id
-        }
+    def update_row(self, orm, fields_and_values: dict):
         for key, value in fields_and_values.items():
-            update_str.append(f'{key} = %({key}__val)s')  # Consider: Escaping the key.
-            update_data[f'{key}__val'] = value
+            print(key, value)
+            setattr(orm, key, value)
 
-        sql = f"UPDATE {self._prefix}_files SET {', '.join(update_str)} WHERE id = %(id)s"
+    def read_file_rows(self, status: int = 0, last_checked_timestamp: datetime = None):
+        session = self.session()
+        files = self.get_table('files')
 
-        with self.cursor() as cursor:
-            try:
-                cursor.execute(sql, update_data)
-                self.cnx.commit()
-            except Error as err:
-                logger.error(err)
-                raise err
+        if last_checked_timestamp:
+            query = session.query(files).filter(files.updated_at > last_checked_timestamp, files.status == status)
+        else:
+            query = session.query(files).filter(files.status == status)
 
-    def delete_file_row(self, id):
-        query_data = {
-            'id': id
-        }
-        sql = f"DELETE FROM {self._prefix}_files WHERE id = %(id)s"
-        with self.cursor() as cursor:
-            try:
-                cursor.execute(sql, query_data)
-                self.cnx.commit()
-            except Error as err:
-                logger.error(err)
-                raise err
+        return query
+
+    def update_file_row(self, file, fields_and_values: dict):
+        session = self.session()
+        self.update_row(file, fields_and_values)
+        session.commit()
+
+    def delete_file_row(self, file):
+        session = self.session()
+        file.delete()
+        session.commit()
 
     def set_runtime(self, fields_and_values: dict):
-        fields_and_values['id'] = 1
-        sql = f"REPLACE INTO {self._prefix}_runtime ({', '.join(fields_and_values.keys())}) VALUES ({', '.join([f'%({key})s' for key in fields_and_values.keys()])})"
-        with self.cursor() as cursor:
-            try:
-                cursor.execute(sql, fields_and_values)
-                self.cnx.commit()
-            except Error as err:
-                logger.error(err)
-                logger.debug(cursor.statement)
-                raise err
+        print('SET RUNTIME')
+        session = self.session()
+        runtime = self.get_table('runtime')
+        exists = session.query(runtime).filter(runtime.id == 1).one_or_none()
+        if not exists:
+            logger.warning('Creating Runtime')
+            new = runtime(id=1, **fields_and_values)
+            session.add(new)
+        else:
+            self.update_row(exists, fields_and_values)
+        session.commit()
 
     def get_runtime(self):
-        sql = f"SELECT * FROM {self._prefix}_runtime WHERE id = 1"
-        with self.cursor(dictionary=True) as cursor:
-            try:
-                cursor.execute(sql)
-                runtime = cursor.fetchone()
-                self.cnx.commit()
-                return runtime
-            except Error as err:
-                logger.error(err)
-                logger.debug(cursor.statement)
-                raise err
+        runtime = self.get_table('runtime')
+        session = self.session()
+        return session.query(runtime).filter(runtime.id == 1).one_or_none()
+
+    def register_error(self, file, error, level=50):
+        session = self.session()
+        error_logs = self.get_table('error_logs')
+        session.new(error_logs(
+            belongs_to=file.id,
+            type=error.__name__,
+            level=level
+        ))
+        session.commit()

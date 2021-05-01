@@ -79,42 +79,42 @@ class Watcher:
 
         last_checked_timestamp = None
         if runtime:
-            last_checked_timestamp = runtime.get('last_checked_timestamp')
+            last_checked_timestamp = runtime.last_checked_timestamp
 
         rows = self.db.read_file_rows(status=rowdo.database.STATUS_WAITING_TO_PROCESS, last_checked_timestamp=last_checked_timestamp)
-        logger.debug(rows)
+        logger.debug([row for row in rows])
         for row in rows:
-            self.db.update_file_row(row['id'], {
+            self.db.update_file_row(row, {
                 "status": 0  # ! DEBUG ONLY rowdo.database.STATUS_PROCESSING
             })
 
-            if row['command'] == rowdo.database.COMMAND_DOWNLOAD:
+            if row.command == rowdo.database.COMMAND_DOWNLOAD:
                 downloaded_info = self.download_file(row)
                 if downloaded_info:
-                    self.db.update_file_row(row['id'], {
+                    self.db.update_file_row(row, {
                         "status": 0,  # ! DEBUG ONLY rowdo.database.STATUS_DONE
                         "path": downloaded_info['relative_path'] if self.keep_relative_path else downloaded_info['full_path'],
                         "filename": downloaded_info['filename']
                     })
-            elif row['command'] == rowdo.database.COMMAND_DELETE_ROW_ONLY:
-                self.db.delete_file_row(row['id'])
-            elif row['command'] == rowdo.database.COMMAND_DELETE_FILE_ONLY:
+            elif row.command == rowdo.database.COMMAND_DELETE_ROW_ONLY:
+                self.db.delete_file_row(row)
+            elif row.command == rowdo.database.COMMAND_DELETE_FILE_ONLY:
                 self.delete_file(row)
-                self.db.update_file_row(row['id'], {
+                self.db.update_file_row(row, {
                     "status": rowdo.database.STATUS_DONE,
                     "path": None,
                     "filename": None
                 })
-            elif row['command'] == rowdo.database.COMMAND_DELETE:
+            elif row.command == rowdo.database.COMMAND_DELETE:
                 self.delete_file(row)
-                self.db.delete_file_row(row['id'])
-            elif row['command'] == rowdo.database.COMMAND_IDLE:
-                self.db.update_file_row(row['id'], {
+                self.db.delete_file_row(row)
+            elif row.command == rowdo.database.COMMAND_IDLE:
+                self.db.update_file_row(row, {
                     "status": rowdo.database.STATUS_DONE
                 })
-
+            print('here')
             self.db.set_runtime({
-                'last_checked_timestamp': row['updated_at'].isoformat()
+                'last_checked_timestamp': row.updated_at.isoformat()
             })
 
     def url_check(self, url):
@@ -130,7 +130,7 @@ class Watcher:
 
     def do_request(self, row):
         try:
-            req = requests.get(row['url'], allow_redirects=True)
+            req = requests.get(row.url, allow_redirects=True)
             req.raise_for_status()
             return req
         except requests.exceptions.HTTPError as err:
@@ -141,16 +141,16 @@ class Watcher:
             self.register_error(row, err)
 
     def get_filename(self, row, req=False):
-        if row['filename']:
-            if '.' not in row['filename']:
-                filename = f"{row['filename']}.{row['url'].rsplit('.', 1)[1]}"
+        if row.filename:
+            if '.' not in row.filename:
+                filename = f"{row.filename}.{row.url.rsplit('.', 1)[1]}"
             else:
-                filename = row['filename']
+                filename = row.filename
 
             return filename
         elif req:
             try:
-                url_last_part = row['url'].rsplit('/', 1)[1]
+                url_last_part = row.url.rsplit('/', 1)[1]
                 filename = self.get_filename_from_cd(req.headers.get('content-disposition'), url_last_part)
                 return filename
             except (KeyError, IndexError) as err:
@@ -171,11 +171,11 @@ class Watcher:
             os.remove(full_path)
 
     def download_file(self, row):
-        if not self.url_check(row['url']):
+        if not self.url_check(row.url):
             self.register_error(row, f'Disallowed URL or URL file format.: {row["url"]}')
             return
 
-        if not self.is_downloadable(row['url']):
+        if not self.is_downloadable(row.url):
             self.register_error(row, f'URL is not downloadable type.: {row["url"]}')
             return
 
@@ -201,14 +201,14 @@ class Watcher:
         full_path = self.get_download_path(filename)
 
         try:
-            if row['resize_mode'] == rowdo.database.RESIZE_NONE:
+            if row.resize_mode == rowdo.database.RESIZE_NONE:
                 file_to_save = req.content
-            elif row['resize_mode'] == rowdo.database.RESIZE_PASSTHROUGH:
+            elif row.resize_mode == rowdo.database.RESIZE_PASSTHROUGH:
                 file_to_save = self.resize_image(req.content, 'RATIO', 1)
-            elif row['resize_mode'] == rowdo.database.RESIZE_RATIO:
-                file_to_save = self.resize_image(req.content, 'RATIO', float(row['resize_ratio']))
-            elif row['resize_mode'] == rowdo.database.RESIZE_DIMENSIONS:
-                file_to_save = self.resize_image(req.content, 'DIMENSIONS', row['resize_width'], row['resize_height'])
+            elif row.resize_mode == rowdo.database.RESIZE_RATIO:
+                file_to_save = self.resize_image(req.content, 'RATIO', float(row.resize_ratio))
+            elif row.resize_mode == rowdo.database.RESIZE_DIMENSIONS:
+                file_to_save = self.resize_image(req.content, 'DIMENSIONS', row.resize_width, row.resize_height)
             else:
                 self.register_error(row, description='Invalid resize mode.', mark_error=True)
         except ResizeException as exc:
@@ -291,7 +291,7 @@ class Watcher:
     def register_error(self, row, description='', mark_error=True):
         logger.error(description)
         if mark_error:
-            self.db.update_file_row(row['id'], {
+            self.db.update_file_row(row, {
                 'status': rowdo.database.STATUS_ERROR
             })
 
@@ -299,5 +299,6 @@ class Watcher:
         run_every_seconds = int(config.get('runtime', 'run_every_seconds'))
         while self.keep_loop:
             self.routine()
+            self.db.close_session()
             for i in range(run_every_seconds * 10):
                 sleep(0.1)

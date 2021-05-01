@@ -11,7 +11,6 @@ def debug():
 
 def run():
     db = rowdo.database.Database()
-    db.connect()
     watcher = rowdo.watcher.Watcher(db)
     # watcher.routine()
     watcher.loop()
