@@ -20,5 +20,9 @@ def get_severity_name(severity):
     return severity
 
 
+def start_log_file():
+    logger.add("logs\\rowdo-service.log", rotation="500 MB")
+
+
 if rowdo.config.get('runtime', 'debug', default=False):
     logger.add("debug.log", backtrace=True, diagnose=True)  # Caution, may leak sensitive data in prod

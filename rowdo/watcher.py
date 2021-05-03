@@ -88,7 +88,6 @@ class Watcher:
             status=[rowdo.database.STATUS_WAITING_TO_PROCESS, rowdo.database.STATUS_WILL_RETRY],
             last_checked_timestamp=last_checked_timestamp
         )
-        print(last_checked_timestamp)
 
         logger.debug([row for row in rows])
         for row in rows:
@@ -118,6 +117,7 @@ class Watcher:
                         'status': rowdo.database.STATUS_WILL_RETRY,
                         'failed_attempts': row.failed_attempts + 1
                     })
+        self.db.close_session()
 
     def process_row(self, row):
         self.db.update_file_row(row, {
@@ -334,6 +334,8 @@ class Watcher:
         run_every_seconds = int(config.get('runtime', 'run_every_seconds'))
         while self.keep_loop:
             self.routine()
-            self.db.close_session()
             for i in range(run_every_seconds * 10):
                 sleep(0.1)
+
+    def stop(self):
+        self.keep_loop = False

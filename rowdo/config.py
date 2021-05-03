@@ -11,7 +11,6 @@ class BlankDefault:
 
 
 CONFIG = configparser.ConfigParser()
-CONFIG.read('./config.ini')
 
 DEFAULTS = {
     "runtime": {
@@ -49,11 +48,12 @@ def deep_get(levels):
 
 
 def get(*args, default=BlankDefault()):
+    CONFIG.read('./config.ini')
     value = CONFIG.get(*args, fallback=deep_get(args))
 
     if isinstance(value, NoValue):
         if isinstance(default, BlankDefault):
-            raise KeyError(f'Desired setting is not found in ../config.ini: { " -> ".join(args) }')
+            raise KeyError(f'Desired setting is not found in ./config.ini: { " -> ".join(args) }')
         else:
             return default
 
