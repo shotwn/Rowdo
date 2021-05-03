@@ -214,7 +214,7 @@ class Watcher:
             raise exceptions.BlackListException(f'Disallowed URL or URL file format.: {row.url}', level=exceptions.ERROR)
 
         if not self.is_downloadable(row.url):
-            raise exceptions.BlackListException(f'URL is not downloadable type.: {row.url}', level=exceptions.WARNING) #!: Debug only.
+            raise exceptions.BlackListException(f'URL is not downloadable type.: {row.url}', level=exceptions.ERROR)
 
         req = self.do_request(row)  # Can throw error.
 
