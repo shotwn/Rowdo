@@ -278,7 +278,7 @@ class Database:
 
         with self.cursor() as cursor:
             try:
-                cursor.execute(sql, [row['id'], error.__name__, error.msg, level])
+                cursor.execute(sql, [row['id'], error.__name__, error.message, level])
                 self.cnx.commit()
             except Error as err:
                 logger.error(err)

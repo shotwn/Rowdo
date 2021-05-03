@@ -6,6 +6,8 @@
   "python.pythonPath": "env\\Scripts\\python.exe",
   "cSpell.words": [
     "Inno",
+    "mariadb",
+    "ondelete",
     "onupdate",
     "rowdo",
     "rsplit"

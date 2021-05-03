@@ -5,8 +5,18 @@ from sqlalchemy.schema import FetchedValue
 TABLE_NAME = 'runtime'
 
 
-def declare(base, prefix):
-    table_name = f'{prefix}_{TABLE_NAME}'
+def declare(base, prefix, table_name=TABLE_NAME):
+    """Create a declared instance of SqlAlchemy Table
+
+    Args:
+        base (sqlalchemy.ext.declarative.declarative_base()): SqlAlchemy Declarative Base
+        prefix (str): Global table prefix
+        table_name (str, optional): Table name. Defaults to TABLE_NAME.
+
+    Returns:
+        sqlalchemy.ext.declarative.declarative_base(): SqlAlchemy Table
+    """
+    table_name = f'{prefix}_{table_name}'
 
     class Runtime(base):
         __tablename__ = table_name

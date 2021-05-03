@@ -9,15 +9,16 @@ import requests
 from PIL import Image
 import filetype
 
-from rowdo.logging import logger
+from rowdo.logging import logger, get_severity_name
 import rowdo.config as config
 import rowdo.database
+import rowdo.exceptions as exceptions
 
 
 class ResizeException(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, *kwargs)
-        self.msg = args[0]
+        self.message = args[0]
 
 
 class Watcher:
@@ -35,6 +36,8 @@ class Watcher:
 
         self.download_path = config.get('download', 'path')
         Path(self.download_path).mkdir(parents=True, exist_ok=True)
+
+        self.max_attempts = config.get('download', 'max_attempts')
 
         self.keep_relative_path = config.get('download', 'keep_relative_path')
 
@@ -81,41 +84,74 @@ class Watcher:
         if runtime:
             last_checked_timestamp = runtime.last_checked_timestamp
 
-        rows = self.db.read_file_rows(status=rowdo.database.STATUS_WAITING_TO_PROCESS, last_checked_timestamp=last_checked_timestamp)
+        rows = self.db.read_file_rows(
+            status=[rowdo.database.STATUS_WAITING_TO_PROCESS, rowdo.database.STATUS_WILL_RETRY],
+            last_checked_timestamp=last_checked_timestamp
+        )
+        print(last_checked_timestamp)
+
         logger.debug([row for row in rows])
         for row in rows:
+            try:
+                self.process_row(row)
+            except exceptions.RowdoException as exc:
+                severity = exc.level if exc.level else 50
+                logger.log(get_severity_name(severity), exc)
+                self.db.register_error(row, exc)
+                if exc.level > exceptions.WARNING:
+                    # Mark file to prevent retry.
+                    self.db.update_file_row(row, {
+                        'status': rowdo.database.STATUS_ERROR,
+                        'failed_attempts': row.failed_attempts + 1
+                    })
+                elif row.failed_attempts >= self.max_attempts - 1:
+                    # Mark file multi tried error. It won't retry.
+                    logger.error(f'Max attempts reached. ID:{row.id}')
+                    self.db.update_file_row(row, {
+                        'status': rowdo.database.STATUS_MAX_RETRIES_REACHED,
+                        'failed_attempts': row.failed_attempts + 1
+                    })
+                else:
+                    # Mark file error but ok to retry.
+                    logger.debug(f'Mark for retry. ID:{row.id}')
+                    self.db.update_file_row(row, {
+                        'status': rowdo.database.STATUS_WILL_RETRY,
+                        'failed_attempts': row.failed_attempts + 1
+                    })
+
+    def process_row(self, row):
+        self.db.update_file_row(row, {
+            "status": rowdo.database.STATUS_PROCESSING  # ! DEBUG ONLY rowdo.database.STATUS_PROCESSING
+        })
+
+        if row.command == rowdo.database.COMMAND_DOWNLOAD:
+            downloaded_info = self.download_file(row)
+            if downloaded_info:
+                self.db.update_file_row(row, {
+                    "status": rowdo.database.STATUS_DONE,  # ! DEBUG ONLY rowdo.database.STATUS_DONE
+                    "downloaded_path": downloaded_info['relative_path'] if self.keep_relative_path else downloaded_info['full_path'],
+                    "filename": downloaded_info['filename']
+                })
+        elif row.command == rowdo.database.COMMAND_DELETE_ROW_ONLY:
+            self.db.delete_file_row(row)
+        elif row.command == rowdo.database.COMMAND_DELETE_FILE_ONLY:
+            self.delete_file(row)
             self.db.update_file_row(row, {
-                "status": 0  # ! DEBUG ONLY rowdo.database.STATUS_PROCESSING
+                "status": rowdo.database.STATUS_DONE,
+                "downloaded_path": None,
+                "filename": None
+            })
+        elif row.command == rowdo.database.COMMAND_DELETE:
+            self.delete_file(row)
+            self.db.delete_file_row(row)
+        elif row.command == rowdo.database.COMMAND_IDLE:
+            self.db.update_file_row(row, {
+                "status": rowdo.database.STATUS_DONE
             })
 
-            if row.command == rowdo.database.COMMAND_DOWNLOAD:
-                downloaded_info = self.download_file(row)
-                if downloaded_info:
-                    self.db.update_file_row(row, {
-                        "status": 0,  # ! DEBUG ONLY rowdo.database.STATUS_DONE
-                        "path": downloaded_info['relative_path'] if self.keep_relative_path else downloaded_info['full_path'],
-                        "filename": downloaded_info['filename']
-                    })
-            elif row.command == rowdo.database.COMMAND_DELETE_ROW_ONLY:
-                self.db.delete_file_row(row)
-            elif row.command == rowdo.database.COMMAND_DELETE_FILE_ONLY:
-                self.delete_file(row)
-                self.db.update_file_row(row, {
-                    "status": rowdo.database.STATUS_DONE,
-                    "path": None,
-                    "filename": None
-                })
-            elif row.command == rowdo.database.COMMAND_DELETE:
-                self.delete_file(row)
-                self.db.delete_file_row(row)
-            elif row.command == rowdo.database.COMMAND_IDLE:
-                self.db.update_file_row(row, {
-                    "status": rowdo.database.STATUS_DONE
-                })
-            print('here')
-            self.db.set_runtime({
-                'last_checked_timestamp': row.updated_at.isoformat()
-            })
+        self.db.set_runtime({
+            'last_checked_timestamp': row.updated_at.isoformat()
+        })
 
     def url_check(self, url):
         for rx in self.disallowed_urls_r:
@@ -132,36 +168,39 @@ class Watcher:
         try:
             req = requests.get(row.url, allow_redirects=True)
             req.raise_for_status()
+            if not req:
+                raise exceptions.RequestError('Empty Response.', level=exceptions.WARNING)
             return req
-        except requests.exceptions.HTTPError as err:
-            self.register_error(row, description='HTTP ERROR', mark_error=False)
-            self.register_error(row, err, mark_error=False)
-        except requests.exceptions.RequestException as err:
-            self.register_error(row, description='REQUESTS ERROR')
-            self.register_error(row, err)
+        except requests.exceptions.HTTPError:
+            raise exceptions.RequestError('HTTP returned non 200 code. Make sure url is correct.', level=exceptions.WARNING)
+        except requests.exceptions.RequestException:
+            raise exceptions.RequestError('Request Exception. Make sure URL is correct.', level=exceptions.WARNING)
 
-    def get_filename(self, row, req=False):
+    def get_filename(self, row, req=False, return_none=False):
         if row.filename:
             if '.' not in row.filename:
+                # No format, get it from URL.
                 filename = f"{row.filename}.{row.url.rsplit('.', 1)[1]}"
             else:
+                # Has format get it directly.
                 filename = row.filename
 
-            return filename
+            return filename.lstrip('~.')  # Do not allow upper directories.
         elif req:
+            # No filename set at all, get from URL.
             try:
                 url_last_part = row.url.rsplit('/', 1)[1]
                 filename = self.get_filename_from_cd(req.headers.get('content-disposition'), url_last_part)
                 return filename
             except (KeyError, IndexError) as err:
-                self.register_error(row, description=f'Couldn\'t get the filename for url: {row["url"]}')
-                self.register_error(row, err)
+                raise exceptions.FileNameError(f'Couldn\'t get the filename for url: {row.url}. {err.message}', level=exceptions.ERROR)
                 return
         else:
-            raise Exception('Cannot obtain filename.')
+            if not return_none:
+                raise exceptions.FileNameError('Couldn\'t obtain filename.', level=exceptions.ERROR)
 
     def delete_file(self, row):
-        filename = self.get_filename(row)
+        filename = self.get_filename(row, return_none=True)
         if not filename:
             return
 
@@ -172,33 +211,28 @@ class Watcher:
 
     def download_file(self, row):
         if not self.url_check(row.url):
-            self.register_error(row, f'Disallowed URL or URL file format.: {row["url"]}')
-            return
+            raise exceptions.BlackListException(f'Disallowed URL or URL file format.: {row.url}', level=exceptions.ERROR)
 
         if not self.is_downloadable(row.url):
-            self.register_error(row, f'URL is not downloadable type.: {row["url"]}')
-            return
+            raise exceptions.BlackListException(f'URL is not downloadable type.: {row.url}', level=exceptions.WARNING) #!: Debug only.
 
-        req = self.do_request(row)
-        if not req:
-            return
+        req = self.do_request(row)  # Can throw error.
 
         if '*' not in self.allowed_mime_types:
             h_content_type = req.headers.get('Content-Type', False)
             if h_content_type and h_content_type not in self.allowed_mime_types and False:
-                self.register_error(row, f'URL is not downloadable mime type (found {h_content_type}).: {row["url"]}')
-                return
+                raise exceptions.BlackListException(f'URL is not downloadable mime type (found {h_content_type}).: {row.url}', level=exceptions.ERROR)
 
             content_type = filetype.guess_mime(req.content)
             if content_type not in self.allowed_mime_types:
-                self.register_error(row, f'Downloaded bytes is not whitelisted mime type (found {content_type}).: {row["url"]}')
-                return
+                raise exceptions.BlackListException(f'Downloaded bytes is not whitelisted mime type (found {content_type}).: {row.url}', level=exceptions.ERROR)
 
         filename = self.get_filename(row, req)
         if not filename:
             return
 
         full_path = self.get_download_path(filename)
+        path_dirname = os.path.dirname(full_path)
 
         try:
             if row.resize_mode == rowdo.database.RESIZE_NONE:
@@ -206,24 +240,27 @@ class Watcher:
             elif row.resize_mode == rowdo.database.RESIZE_PASSTHROUGH:
                 file_to_save = self.resize_image(req.content, 'RATIO', 1)
             elif row.resize_mode == rowdo.database.RESIZE_RATIO:
-                file_to_save = self.resize_image(req.content, 'RATIO', float(row.resize_ratio))
+                file_to_save = self.resize_image(req.content, 'RATIO', row.resize_ratio)
             elif row.resize_mode == rowdo.database.RESIZE_DIMENSIONS:
                 file_to_save = self.resize_image(req.content, 'DIMENSIONS', row.resize_width, row.resize_height)
             else:
-                self.register_error(row, description='Invalid resize mode.', mark_error=True)
-        except ResizeException as exc:
-            self.register_error(row, exc)
-            return
+                raise exceptions.ResizeModeException('Invalid resize mode.', level=exceptions.ERROR)
+        except exceptions.ResizeException as exc:
+            raise exceptions.ResizeException(f'Resize algorithm failed: {exc.message}', level=exceptions.ERROR)
 
         try:
+            if not os.path.exists(path_dirname):
+                logger.debug(f'Creating new directory: {path_dirname}')
+                os.makedirs(path_dirname)  # Create nested folders.
+
             if getattr(file_to_save, 'save', False):
+                logger.trace(f'Saving using PIL: {full_path}')
                 file_to_save.save(full_path)  # PIL
             else:
+                logger.trace(f'Saving file directly: {full_path}')
                 open(full_path, 'wb').write(file_to_save)
-        except OSError as err:
-            self.register_error(row, description=f'Couldn\'t open the path {full_path}', mark_error=False)
-            self.register_error(row, err, mark_error=False)
-            return
+        except (OSError, ValueError) as err:
+            raise exceptions.FileAccessError(f'Couldn\'t open the path {full_path}. {err}', level=exceptions.ERROR)
 
         return {
             "filename": filename,
@@ -268,32 +305,30 @@ class Watcher:
     @staticmethod
     def resize_image(image_bytes, mode, *args):
         img = Image.open(io.BytesIO(image_bytes))
-        print(args)
+        logger.trace(f'Resize Image, Mode:{mode} Args: {args}')
         if mode == 'RATIO':
             if len(args) < 1 or not args[0]:  # In case it is None or zero.
-                raise ResizeException('Resize ratio was missing.')
+                raise exceptions.ResizeException('Resize ratio was missing.', exceptions.ERROR)
 
-            width = math.ceil(img.width * args[0])
-            height = math.ceil(img.height * args[0])
+            try:
+                resize_ratio = float(args[0])
+            except TypeError as err:  # Invalid row.resize_ratio
+                raise exceptions.ResizeException(f"Resize ratio is not valid. {err}", exceptions.ERROR)
+
+            width = math.ceil(img.width * resize_ratio)
+            height = math.ceil(img.height * resize_ratio)
             img = img.resize((width, height))
 
         if mode == 'DIMENSIONS':
             if len(args) < 2:
-                raise ResizeException('Resize width or height was missing.')
+                raise exceptions.ResizeException('Resize width or height was missing.', exceptions.ERROR)
 
             if not (args[0] and args[1]):
-                raise ResizeException('Resize width or height is zero.')
+                raise exceptions.ResizeException('Resize width or height is zero.', exceptions.ERROR)
 
             img = img.resize((args[0], args[1]))
 
         return img
-
-    def register_error(self, row, description='', mark_error=True):
-        logger.error(description)
-        if mark_error:
-            self.db.update_file_row(row, {
-                'status': rowdo.database.STATUS_ERROR
-            })
 
     def loop(self):
         run_every_seconds = int(config.get('runtime', 'run_every_seconds'))

@@ -29,7 +29,8 @@ DEFAULTS = {
         "enabled": True,
         "path": os.path.join('files'),
         "keep_relative_path": False,
-        "allow_mime_types": "*"
+        "allow_mime_types": "*",
+        "max_attempts": 3
     }
 }
 
