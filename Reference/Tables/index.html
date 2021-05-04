@@ -1,0 +1,1271 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.3">
+    
+    
+      
+        <title>Tables - Rowdo Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e35208c4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="cyan">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tables" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Rowdo Documentation" class="md-header__button md-logo" aria-label="Rowdo Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Rowdo Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tables
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="cyan" type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2m10-3a5 5 0 0 1 5 5 5 5 0 0 1-5 5H7a5 5 0 0 1-5-5 5 5 0 0 1 5-5h10M7 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3h10a3 3 0 0 0 3-3 3 3 0 0 0-3-3H7z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="cyan" type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Rowdo Documentation" class="md-nav__button md-logo" aria-label="Rowdo Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Rowdo Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      <label class="md-nav__link" for="__nav_2">
+        Reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Config/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Tables
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Tables
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#files-table" class="md-nav__link">
+    Files Table
+  </a>
+  
+    <nav class="md-nav" aria-label="Files Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    Fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#url" class="md-nav__link">
+    Url
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filename" class="md-nav__link">
+    Filename
+  </a>
+  
+    <nav class="md-nav" aria-label="Filename">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    Extensions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resize-mode" class="md-nav__link">
+    Resize Mode
+  </a>
+  
+    <nav class="md-nav" aria-label="Resize Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#passthrough" class="md-nav__link">
+    Passthrough
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dimensions" class="md-nav__link">
+    Dimensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ratio" class="md-nav__link">
+    Ratio
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command" class="md-nav__link">
+    Command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    Status
+  </a>
+  
+    <nav class="md-nav" aria-label="Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#waiting-to-process" class="md-nav__link">
+    Waiting to Process
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#processing" class="md-nav__link">
+    Processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#done" class="md-nav__link">
+    Done
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error" class="md-nav__link">
+    Error
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#will-retry" class="md-nav__link">
+    Will Retry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#max-retries-reached" class="md-nav__link">
+    Max Retries Reached
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failed-attempts" class="md-nav__link">
+    Failed Attempts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preset-id" class="md-nav__link">
+    Preset ID
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downloaded-path" class="md-nav__link">
+    Downloaded Path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#created-at" class="md-nav__link">
+    Created At
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updated-at" class="md-nav__link">
+    Updated At
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-logs-table" class="md-nav__link">
+    Error Logs Table
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Logs Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields_1" class="md-nav__link">
+    Fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#belongs-to" class="md-nav__link">
+    Belongs To
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type" class="md-nav__link">
+    Type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level" class="md-nav__link">
+    Level
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Windows%20Specific/" class="md-nav__link">
+        Windows Specific
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#files-table" class="md-nav__link">
+    Files Table
+  </a>
+  
+    <nav class="md-nav" aria-label="Files Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    Fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#url" class="md-nav__link">
+    Url
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filename" class="md-nav__link">
+    Filename
+  </a>
+  
+    <nav class="md-nav" aria-label="Filename">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    Extensions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resize-mode" class="md-nav__link">
+    Resize Mode
+  </a>
+  
+    <nav class="md-nav" aria-label="Resize Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#passthrough" class="md-nav__link">
+    Passthrough
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dimensions" class="md-nav__link">
+    Dimensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ratio" class="md-nav__link">
+    Ratio
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command" class="md-nav__link">
+    Command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    Status
+  </a>
+  
+    <nav class="md-nav" aria-label="Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#waiting-to-process" class="md-nav__link">
+    Waiting to Process
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#processing" class="md-nav__link">
+    Processing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#done" class="md-nav__link">
+    Done
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error" class="md-nav__link">
+    Error
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#will-retry" class="md-nav__link">
+    Will Retry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#max-retries-reached" class="md-nav__link">
+    Max Retries Reached
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failed-attempts" class="md-nav__link">
+    Failed Attempts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preset-id" class="md-nav__link">
+    Preset ID
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downloaded-path" class="md-nav__link">
+    Downloaded Path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#created-at" class="md-nav__link">
+    Created At
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updated-at" class="md-nav__link">
+    Updated At
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-logs-table" class="md-nav__link">
+    Error Logs Table
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Logs Table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields_1" class="md-nav__link">
+    Fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#belongs-to" class="md-nav__link">
+    Belongs To
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type" class="md-nav__link">
+    Type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level" class="md-nav__link">
+    Level
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="tables">Tables<a class="headerlink" href="#tables" title="Permanent link">⚓︎</a></h1>
+<h2 id="files-table">Files Table<a class="headerlink" href="#files-table" title="Permanent link">⚓︎</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Insert / Update</th>
+<th>Nullable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>Integer</td>
+<td>AUTO - PRIMARY KEY</td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>url</td>
+<td>Text</td>
+<td></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>filename</td>
+<td>Text</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>resize_mode</td>
+<td>Integer</td>
+<td>-1</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>resize_width</td>
+<td>Integer</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>resize_height</td>
+<td>Integer</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>resize_ratio</td>
+<td>Numeric(10, 5)</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>command</td>
+<td>Integer</td>
+<td>1</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>status</td>
+<td>Integer</td>
+<td>0</td>
+<td>Yes*</td>
+<td>No</td>
+</tr>
+<tr>
+<td>failed_attempts</td>
+<td>Integer</td>
+<td>0</td>
+<td>Yes*</td>
+<td>No</td>
+</tr>
+<tr>
+<td>preset_id</td>
+<td>Integer</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>downloaded_path</td>
+<td>Text</td>
+<td></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>DateTime</td>
+<td>CURRENT_TIMESTAMP</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>DateTime</td>
+<td>CURRENT_TIMESTAMP</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>*: Only for RESET</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="fields">Fields<a class="headerlink" href="#fields" title="Permanent link">⚓︎</a></h3>
+<h4 id="url">Url<a class="headerlink" href="#url" title="Permanent link">⚓︎</a></h4>
+<p>URL for the item to be downloaded. It cannot be blank.</p>
+<h4 id="filename">Filename<a class="headerlink" href="#filename" title="Permanent link">⚓︎</a></h4>
+<p>File name for the downloaded file. If not set rowdo will generate the file name from URL and save the file directly on top level directory.</p>
+<p>File name field can contain directories such as <code>\events\2002</code> or <code>\events\2002.12.02.jpg</code>. Directories will be automatically created inside the save directory.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Currently rowdo doesn't do any uniqueness checks on file names. So make sure to check database before entering a new file name. Using the same file name twice will override the already existing file.</p>
+</div>
+<h5 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">⚓︎</a></h5>
+<p>If not present, Rowdo will try to assign an extension to saved file automatically using the URL or MIME Type. For example <code>\events\2002</code> will be saved as <code>\events\2002.jpg</code>.</p>
+<p>If filename is set and contains one or more dots, string after the last dot will be assumed as the save extension. For example with <code>\events\2002.12.02</code> <code>02</code> would be assumed as extension.</p>
+<p>If any of the resize modes is active, PIL library will try to re-format the downloaded contents as the set format. So even if downloaded picture is a JPG, it can be saved as a PNG by giving <code>.png</code> extension to filename as long as resize is active. If resize is not active, downloaded content will still have the <code>.png</code> extension but it will not be in PNG format.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is highly recommended to provide a full filename with an extension.</p>
+</div>
+<h4 id="resize-mode">Resize Mode<a class="headerlink" href="#resize-mode" title="Permanent link">⚓︎</a></h4>
+<p>Sets the resize mode.</p>
+<div class="admonition info inline">
+<p class="admonition-title">Resize Modes</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-1</td>
+<td>None</td>
+</tr>
+<tr>
+<td>0</td>
+<td>Passthrough</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Dimensions</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Ratio</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="passthrough">Passthrough<a class="headerlink" href="#passthrough" title="Permanent link">⚓︎</a></h5>
+<p>Saves the file using PIL library without any resize.</p>
+<h5 id="dimensions">Dimensions<a class="headerlink" href="#dimensions" title="Permanent link">⚓︎</a></h5>
+<p>Resizes the file according to resize_width and resize_height.</p>
+<h5 id="ratio">Ratio<a class="headerlink" href="#ratio" title="Permanent link">⚓︎</a></h5>
+<p>Resizes the file according to resize_ratio.</p>
+<div style="clear: both"> </div>
+
+<h4 id="command">Command<a class="headerlink" href="#command" title="Permanent link">⚓︎</a></h4>
+<p>Main commands available in rowdo for the row.</p>
+<div class="admonition info inline end">
+<p class="admonition-title">Commands</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Idle</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Download</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Delete</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Delete File Only</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Delete DB Entry Only</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Idle command gives done status but does not process the row any further.</li>
+<li>Download command downloads the file in the next run.</li>
+<li>Delete command deletes both the file and the row. Delete file only and Delete DB entry only commands do partial deletes.</li>
+</ul>
+<div style="clear: both"> </div>
+
+<h4 id="status">Status<a class="headerlink" href="#status" title="Permanent link">⚓︎</a></h4>
+<p>Status codes are the main tracking and triggering mechanism for rowdo. Rowdo processes rows only when their status codes are in <code>Waiting to Process</code> or <code>Will Retry</code> modes.</p>
+<div class="admonition info inline">
+<p class="admonition-title">Status Codes</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Waiting to Process</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Processing</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Will Retry</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Max Retries Reached</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="waiting-to-process">Waiting to Process<a class="headerlink" href="#waiting-to-process" title="Permanent link">⚓︎</a></h5>
+<p>Default RESET state for the rowdo. For processing to start with any <a href="#command">command</a> status code should be <code>Waiting to process</code> or <code>Will Retry</code>. It is important to understand that changing the command will not trigger any processing as long as status is not RESET to this value.</p>
+<h5 id="processing">Processing<a class="headerlink" href="#processing" title="Permanent link">⚓︎</a></h5>
+<p>Indicates the given command being processed. If rowdo will get terminated when a process is not complete, at next run all processing statuses will be reverted back to <a href="#waiting-to-process">waiting to process</a>.</p>
+<h5 id="done">Done<a class="headerlink" href="#done" title="Permanent link">⚓︎</a></h5>
+<p>Set command is successfully completed.</p>
+<h5 id="error">Error<a class="headerlink" href="#error" title="Permanent link">⚓︎</a></h5>
+<p>A critical error happened and processing of this row has been terminated. This will create an error entry in <a href="#error-logs-table">error logs table</a>.</p>
+<h5 id="will-retry">Will Retry<a class="headerlink" href="#will-retry" title="Permanent link">⚓︎</a></h5>
+<p>A warning level error happened and processing of this row has been terminated. This status is generally generated in non-configuration-related errors, such as a network error. An error can be found in <a href="#error-logs-table">error logs table</a>.</p>
+<p>Rowdo will try the process this row again in next run until the maximum set number of retries in the config.ini has been reached.</p>
+<h5 id="max-retries-reached">Max Retries Reached<a class="headerlink" href="#max-retries-reached" title="Permanent link">⚓︎</a></h5>
+<p>Indicates the error which created the <a href="#will-retry">will retry</a> code was not resolved until maximum tries have been reached. Processing has been stopped.</p>
+<h4 id="failed-attempts">Failed Attempts<a class="headerlink" href="#failed-attempts" title="Permanent link">⚓︎</a></h4>
+<p>Indicates the failed attempts in processing of this file. It shouldn't be rewritten unless problem was solved and a RESET with multiple tries allowed is being made.</p>
+<h4 id="preset-id">Preset ID<a class="headerlink" href="#preset-id" title="Permanent link">⚓︎</a></h4>
+<p>Reserved field for possible future per-item configuration feature.</p>
+<h4 id="downloaded-path">Downloaded Path<a class="headerlink" href="#downloaded-path" title="Permanent link">⚓︎</a></h4>
+<p>Where the file is located in the file system. It can be a relative path or an absolute path depending on corresponding configuration in <code>config.ini</code>.</p>
+<h4 id="created-at">Created At<a class="headerlink" href="#created-at" title="Permanent link">⚓︎</a></h4>
+<p>Required field to keep track of the row. In mysql, rowdo enables <code>CURRENT_TIMESTAMP</code> default. So created date is automatically set during INSERT and user does not have to create this field manually.</p>
+<h4 id="updated-at">Updated At<a class="headerlink" href="#updated-at" title="Permanent link">⚓︎</a></h4>
+<p>Required field to keep track of changes happening to row commands. Rowdo will remember the latest checked row and will not check rows which are updated before it.</p>
+<p>In mysql, rowdo enables <code>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</code> defaults, so user does not have to create/modify this field manually on every insert/update.</p>
+<h2 id="error-logs-table">Error Logs Table<a class="headerlink" href="#error-logs-table" title="Permanent link">⚓︎</a></h2>
+<p>Read only table of errors occurred during processing of rows.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This table does not include system level errors, such as configuration or file permission errors. Check log files in <code>.\logs\</code> for these.</p>
+</div>
+<h3 id="fields_1">Fields<a class="headerlink" href="#fields_1" title="Permanent link">⚓︎</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Nullable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>Integer</td>
+<td>No</td>
+</tr>
+<tr>
+<td>belongs_to</td>
+<td>Integer</td>
+<td>No</td>
+</tr>
+<tr>
+<td>type</td>
+<td>text</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>message</td>
+<td>text</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>level</td>
+<td>text</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>DateTime</td>
+<td>No</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>DateTime</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h4 id="belongs-to">Belongs To<a class="headerlink" href="#belongs-to" title="Permanent link">⚓︎</a></h4>
+<p>A foreign key representing a row in <a href="#files-table">files table</a>.</p>
+<h4 id="type">Type<a class="headerlink" href="#type" title="Permanent link">⚓︎</a></h4>
+<p>Represents an exception type.</p>
+<h4 id="level">Level<a class="headerlink" href="#level" title="Permanent link">⚓︎</a></h4>
+<p>Represents a severity level.
+<div class="highlight"><pre><span></span><code><span class="n">severities</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;CRITICAL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s1">&#39;INFO&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s1">&#39;TRACE&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s1">&#39;NOTSET&#39;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h1 id="runtime-table">Runtime Table<a class="headerlink" href="#runtime-table" title="Permanent link">⚓︎</a></h1>
+<p>Runtime table is a 1 row table which keeps internal parameters for rowdo throughout sessions.</p>
+<h2 id="fields_2">Fields<a class="headerlink" href="#fields_2" title="Permanent link">⚓︎</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>Integer</td>
+<td>Always 1</td>
+</tr>
+<tr>
+<td>last_checked_timestamp</td>
+<td>Integer</td>
+<td>Timestamp of the last processed row</td>
+</tr>
+<tr>
+<td>schema_version</td>
+<td>Text</td>
+<td>Active database schema version</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>DateTime</td>
+<td></td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>DateTime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../Config/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Configuration
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../Windows%20Specific/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Windows Specific
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.4ea5477f.min.js"></script>
+      
+    
+  </body>
+</html>
