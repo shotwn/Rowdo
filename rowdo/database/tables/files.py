@@ -24,7 +24,6 @@ def declare(base, prefix, table_name=TABLE_NAME):
 
         id = Column(Integer, primary_key=True)
         url = Column(Text, nullable=False)
-        downloaded_path = Column(Text)
         filename = Column(Text)
         resize_mode = Column(Integer, server_default='-1', nullable=False)
         resize_width = Column(Integer)
@@ -34,6 +33,7 @@ def declare(base, prefix, table_name=TABLE_NAME):
         status = Column(Integer, server_default='0', nullable=False)
         failed_attempts = Column(Integer, server_default='0', nullable=False)
         preset_id = Column(Integer)
+        downloaded_path = Column(Text)
         created_at = Column(DateTime, server_default=func.now(), nullable=False)
         updated_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), server_onupdate=FetchedValue(), nullable=False)
         errors = relationship('ErrorLog', back_populates="parent", viewonly=False)

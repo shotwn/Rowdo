@@ -1,0 +1,25 @@
+site_name: Rowdo Documentation
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: black
+      accent: cyan
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+    - scheme: default
+      primary: white
+      accent: cyan
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+markdown_extensions:
+  - toc:
+      permalink: ⚓︎
+  - admonition
+  - pymdownx.escapeall:
+      hardbreak: True
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - attr_list

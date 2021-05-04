@@ -5,4 +5,5 @@ files/
 build/
 dist/
 logs/
+docs/site/
 *.spec

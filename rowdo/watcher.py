@@ -26,10 +26,11 @@ class Watcher:
         self.db = db
         self.keep_loop = True
 
-        allow_from = config.get('download', 'allow_from').split(',')
-        disallow_from = config.get('download', 'disallow_from').split(',')
-        allow_formats = config.get('download', 'allow_formats_url').split(',')
-        allow_mimes = config.get('download', 'allow_mime_types').split(',')
+        allow_from = config.get('download', 'allow_from', return_type=list)
+        disallow_from = config.get('download', 'disallow_from', return_type=list)
+        allow_formats = config.get('download', 'allow_formats_url', return_type=list)
+        allow_mimes = config.get('download', 'allow_mime_types', return_type=list)
+
         self.allowed_urls_r = self.create_url_regexes(allow_from, allow_formats)
         self.disallowed_urls_r = self.create_url_regexes(disallow_from)
         self.allowed_mime_types = allow_mimes
@@ -40,14 +41,6 @@ class Watcher:
         self.max_attempts = config.get('download', 'max_attempts')
 
         self.keep_relative_path = config.get('download', 'keep_relative_path')
-
-    @staticmethod
-    def strip_list(list_to_strip):
-        new_list = []
-        for item in list_to_strip:
-            new_list.appned(item.strip())
-
-        return new_list
 
     def create_url_regexes(self, urls, formats=None):
         regexes = []

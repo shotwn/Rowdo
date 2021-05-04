@@ -41,7 +41,7 @@ class Database:
             database = config.get('database', 'database')
 
             connect_url = f"mysql://{user}:{password}@{host}/{database}"
-        self._engine = create_engine(connect_url, echo=True, future=True, encoding='utf-8')
+        self._engine = create_engine(connect_url, echo=False, future=True, encoding='utf-8')
 
         self._session_maker = sessionmaker(bind=self._engine)
         self._declarative_base = declarative_base(cls=RowdoBase)
