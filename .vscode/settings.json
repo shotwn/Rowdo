@@ -8,9 +8,11 @@
     "Inno",
     "chdir",
     "mariadb",
+    "noqa",
     "ondelete",
     "onupdate",
     "rowdo",
-    "rsplit"
+    "rsplit",
+    "serviceutil"
   ]
 }

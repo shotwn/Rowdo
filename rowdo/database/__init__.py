@@ -7,6 +7,7 @@ from rowdo.database.base import RowdoBase
 from rowdo.logging import logger
 import rowdo.config as config
 import rowdo.exceptions
+from rowdo.version import __schema_version__
 
 import rowdo.database.tables
 
@@ -124,7 +125,7 @@ class Database:
         exists = session.query(runtime).filter(runtime.id == 1).one_or_none()
         if not exists:
             logger.warning('Creating Runtime')
-            new = runtime(id=1, **fields_and_values)
+            new = runtime(id=1, schema_version=__schema_version__, **fields_and_values)
             session.add(new)
         else:
             self._update_row(exists, fields_and_values)

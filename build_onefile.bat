@@ -1,1 +1,0 @@
-pyinstaller.exe --onefile --runtime-tmpdir=. main.py

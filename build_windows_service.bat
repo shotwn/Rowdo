@@ -1,1 +1,0 @@
-pyinstaller.exe --onefile --runtime-tmpdir=. --hidden-import win32timezone winservice.py

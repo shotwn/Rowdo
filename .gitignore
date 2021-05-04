@@ -4,4 +4,5 @@ config.ini
 files/
 build/
 dist/
+logs/
 *.spec

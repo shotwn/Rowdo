@@ -53,7 +53,10 @@ def get(*args, default=BlankDefault()):
 
     if isinstance(value, NoValue):
         if isinstance(default, BlankDefault):
-            raise KeyError(f'Desired setting is not found in ./config.ini: { " -> ".join(args) }')
+            # import rowdo.logging
+            err = KeyError(f'Desired setting is not found in ./config.ini: { " -> ".join(args) }')
+            # rowdo.logging.logger.error(err)
+            raise err
         else:
             return default
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, text
+from sqlalchemy import Column, Integer, DateTime, text, Text
 from sqlalchemy.sql import func
 from sqlalchemy.schema import FetchedValue
 
@@ -23,6 +23,7 @@ def declare(base, prefix, table_name=TABLE_NAME):
 
         id = Column(Integer, primary_key=True)
         last_checked_timestamp = Column(DateTime)
+        schema_version = Column(Text)
         created_at = Column(DateTime, server_default=func.now())
         updated_at = Column(DateTime, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"), server_onupdate=FetchedValue())
     return Runtime

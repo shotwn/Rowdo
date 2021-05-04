@@ -209,7 +209,7 @@ class Watcher:
         if os.path.exists(full_path):
             os.remove(full_path)
 
-    def download_file(self, row):
+    def download_file(self, row):  # noqa: C901
         if not self.url_check(row.url):
             raise exceptions.BlackListException(f'Disallowed URL or URL file format.: {row.url}', level=exceptions.ERROR)
 

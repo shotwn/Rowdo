@@ -5,40 +5,33 @@ import win32serviceutil  # ServiceFramework and commandline helper
 import win32service  # Events
 import servicemanager  # Simple setup and logging
 
-import rowdo.watcher
-import rowdo.database
-import rowdo.logging
+import rowdo
+
+RUN_SERVICE_FLAG = '--run-as-service'
+SERVICE_MANAGER_FLAG = '--service'
 
 
 class RowdoServiceFramework(win32serviceutil.ServiceFramework):
 
     _svc_name_ = 'Rowdo'
     _svc_display_name_ = 'Rowdo Service'
+    _exe_args_ = RUN_SERVICE_FLAG
 
     def SvcStop(self):
         """Stop the service"""
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        self.watcher.stop()
+        rowdo.stop()
         self.ReportServiceStatus(win32service.SERVICE_STOPPED)
 
     def SvcDoRun(self):
         """Start the service; does not return until stopped"""
         self.ReportServiceStatus(win32service.SERVICE_START_PENDING)
         try:
-            db = rowdo.database.Database()
-            self.watcher = rowdo.watcher.Watcher(db)
+            self.ReportServiceStatus(win32service.SERVICE_RUNNING)
+            rowdo.start(sys.argv[0])  # Changes CWD
         except Exception as err:
-            self.log(os.path.dirname(__file__))
             self.log(err)
-            raise err
-
-        self.ReportServiceStatus(win32service.SERVICE_RUNNING)
-        # Run the service
-        try:
-            self.watcher.loop()
-        except Exception as err:
-            self.log(os.getcwd())
-            self.log(err)
+            self.ReportServiceStatus(win32service.SERVICE_STOPPED)
             raise err
 
     def log(self, msg):
@@ -47,17 +40,25 @@ class RowdoServiceFramework(win32serviceutil.ServiceFramework):
 
 
 def init():
-    if len(sys.argv) == 1:
-        exe_file_dir = sys.argv[0]
-        os.chdir(os.path.dirname(exe_file_dir))
-        rowdo.logging.start_log_file()
-        rowdo.logging.logger.info(sys.argv)
-
+    # Starting the service
+    if len(sys.argv) == 2 and sys.argv[1] == RUN_SERVICE_FLAG:
         servicemanager.Initialize()
         servicemanager.PrepareToHostSingle(RowdoServiceFramework)
         servicemanager.StartServiceCtrlDispatcher()
-    else:
+    # Service manager commands
+    elif len(sys.argv) >= 2 and sys.argv[1] == SERVICE_MANAGER_FLAG:
+        sys.argv.pop(1)
         win32serviceutil.HandleCommandLine(RowdoServiceFramework)
+    # Routine start
+    else:
+        rowdo.start()
+
+
+def debug_log(s):
+    print(s)
+    os.chdir(os.path.dirname(sys.argv[0]))
+    with open('service.debug.log', 'w+') as f:
+        f.write(s)
 
 
 if __name__ == '__main__':
