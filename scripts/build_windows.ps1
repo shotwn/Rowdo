@@ -4,7 +4,13 @@ New-Item -Path .\win-build -ItemType directory
 
 cd .\win-build
 
-pyinstaller.exe --onefile --runtime-tmpdir=. --hidden-import win32timezone ..\..\windows.py
+pyinstaller.exe `
+    --onefile `
+    --runtime-tmpdir=. `
+    --hidden-import win32timezone `
+    --name Rowdo `
+    --icon ..\logo.ico `
+    ..\..\windows.py
 
 deactivate
 
