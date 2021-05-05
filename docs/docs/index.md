@@ -1,4 +1,9 @@
 # Getting Started
+
+<div style="text-align: center">
+<img src="assets/github_banner.png" width="75%">
+</div>
+
 ### How Rowdo Works
 Rowdo polls it's [files table](./Reference/Tables/#files-table) to track URLs and download them to file system. Results regarding the download operation are also depicted this table.
 

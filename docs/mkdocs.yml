@@ -1,6 +1,7 @@
 site_name: Rowdo Documentation
 theme:
   name: material
+  logo: assets/Logo.png
   palette:
     - scheme: slate
       primary: black
