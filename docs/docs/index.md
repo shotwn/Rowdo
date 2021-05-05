@@ -33,7 +33,7 @@ python main.py
 ### Configuration
 Rowdo uses a global configuration file next to it's main script or executable called [config.ini](Reference/Config.md). Minimum required configuration to connect MySQL databases can be found [here](./Reference/Config/#bare-minimums).
 
-In Windows environments, Rowdo executable can be installed as a [service](/Reference/Windows%20Specific/#install).
+In Windows environments, Rowdo executable can be installed as a [service](./Reference/Windows%20Specific/#install).
 
 ### Creating a Download Task
 To download a file basically `INSERT` a new row in [files table](./Reference/Tables/#files-table).
