@@ -430,7 +430,7 @@
 </code></pre></div></p>
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">⚓︎</a></h3>
 <p>Rowdo uses a global configuration file next to it's main script or executable called <a href="Reference/Config/">config.ini</a>. Minimum required configuration to connect MySQL databases can be found <a href="./Reference/Config/#bare-minimums">here</a>.</p>
-<p>In Windows environments, Rowdo executable can be installed as a <a href="/Reference/Windows%20Specific/#install">service</a>.</p>
+<p>In Windows environments, Rowdo executable can be installed as a <a href="./Reference/Windows%20Specific/#install">service</a>.</p>
 <h3 id="creating-a-download-task">Creating a Download Task<a class="headerlink" href="#creating-a-download-task" title="Permanent link">⚓︎</a></h3>
 <p>To download a file basically <code>INSERT</code> a new row in <a href="./Reference/Tables/#files-table">files table</a>.</p>
 <div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">url</span><span class="o">`</span><span class="p">)</span>
