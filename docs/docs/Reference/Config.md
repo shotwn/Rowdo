@@ -194,6 +194,15 @@ Period of the main loop checking the database.
 run_every_seconds = 10
 ```
 
+##### Working Directory
+`working_directory` optional \
+integer `default: executable or script call location`
+
+Main directory for program to work in. [Download directory](#path) and logs are relative to this directory.
+Normally these are relative to `Rowdo.exe` or when run as script to cwd.
+``` ini
+working_directory = C:\my other directory
+```
 ## Examples
 ### Bare Minimums
 ``` ini

@@ -9,7 +9,7 @@ pyinstaller.exe `
     --runtime-tmpdir=. `
     --hidden-import win32timezone `
     --name Rowdo `
-    --icon ..\logo.ico `
+    --icon ..\..\assets\logo.ico `
     ..\..\windows.py
 
 deactivate

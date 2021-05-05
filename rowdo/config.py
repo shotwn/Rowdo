@@ -15,7 +15,8 @@ CONFIG = configparser.ConfigParser()
 DEFAULTS = {
     "runtime": {
         "debug": False,
-        "run_every_seconds": 10
+        "run_every_seconds": 10,
+        "working_directory": False
     },
     "database": {
         "table_prefix": "rowdo",
