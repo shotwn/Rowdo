@@ -495,15 +495,18 @@
 <p>Using <a href="./Reference/Tables/#passthrough">passthrough</a> resize mode you can format images using PIL library without resizing them.
 <div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span> <span class="p">(</span>
     <span class="o">`</span><span class="n">url</span><span class="o">`</span><span class="p">,</span>
-    <span class="o">`</span><span class="n">resize_mode</span><span class="o">`</span>
+    <span class="o">`</span><span class="n">resize_mode</span><span class="o">`</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">filename</span><span class="o">`</span>
 <span class="p">)</span>
 <span class="k">VALUES</span> <span class="p">(</span>
     <span class="s1">&#39;https://raw.githubusercontent.com/shotwn/Rowdo/main/assets/Logo.png&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;0&#39;</span>
+    <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;logo.jpg&#39;</span>
 <span class="p">)</span>
 </code></pre></div></p>
 <h3 id="deleting-a-downloaded-file">Deleting a Downloaded File<a class="headerlink" href="#deleting-a-downloaded-file" title="Permanent link">⚓︎</a></h3>
-<p>Rowdo can delete files using delete command. After setting a new command value it is important to reset <a href="./Reference/Tables/#status">status field</a>. Unless status is reset to the <a href="./Reference/Tables/#waiting-to-process">initial state</a> new command won't be processed.</p>
+<p>Rowdo can delete files using delete command.</p>
+<p>After setting a new command value it is important to reset <a href="./Reference/Tables/#status">status field</a>. Unless status field is set to the <a href="./Reference/Tables/#waiting-to-process">initial state</a>, the new command won't be processed.</p>
 <p>Deleting a downloaded file while keeping the row. Notice how status is reset to <code>0</code>.
 <div class="highlight"><pre><span></span><code><span class="k">UPDATE</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span>
     <span class="k">SET</span> <span class="o">`</span><span class="n">command</span><span class="o">`</span> <span class="o">=</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="o">`</span><span class="n">status</span><span class="o">`</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
