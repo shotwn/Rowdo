@@ -196,7 +196,7 @@
   
     <li class="md-nav__item">
       <a href="../.." class="md-nav__link">
-        Index
+        Getting Started
       </a>
     </li>
   
@@ -416,6 +416,13 @@
           <li class="md-nav__item">
   <a href="#run-every-seconds" class="md-nav__link">
     Run Every Seconds
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-directory" class="md-nav__link">
+    Working Directory
   </a>
   
 </li>
@@ -680,6 +687,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#working-directory" class="md-nav__link">
+    Working Directory
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -737,6 +751,7 @@
                 
                 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">⚓︎</a></h1>
 <h2 id="configini">Config.ini<a class="headerlink" href="#configini" title="Permanent link">⚓︎</a></h2>
+<p>Rowdo uses the <code>config.ini</code> file on it's script or executable directory for global configuration parameters.</p>
 <h3 id="fields">Fields<a class="headerlink" href="#fields" title="Permanent link">⚓︎</a></h3>
 <h4 id="database">Database<a class="headerlink" href="#database" title="Permanent link">⚓︎</a></h4>
 <div class="highlight"><pre><span></span><code><span class="k">[database]</span>
@@ -881,6 +896,13 @@ integer <code>default: 10</code></p>
 <p>Period of the main loop checking the database.
 <div class="highlight"><pre><span></span><code><span class="na">run_every_seconds</span> <span class="o">=</span> <span class="s">10</span>
 </code></pre></div></p>
+<h5 id="working-directory">Working Directory<a class="headerlink" href="#working-directory" title="Permanent link">⚓︎</a></h5>
+<p><code>working_directory</code> optional <br />
+integer <code>default: executable or script call location</code></p>
+<p>Main directory for program to work in. <a href="#path">Download directory</a> and logs are relative to this directory.
+Normally these are relative to <code>Rowdo.exe</code> or when run as script to cwd.
+<div class="highlight"><pre><span></span><code><span class="na">working_directory</span> <span class="o">=</span> <span class="s">C:\my other directory</span>
+</code></pre></div></p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">⚓︎</a></h2>
 <h3 id="bare-minimums">Bare Minimums<a class="headerlink" href="#bare-minimums" title="Permanent link">⚓︎</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1">; config.ini</span>
@@ -932,7 +954,7 @@ integer <code>default: 10</code></p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Index
+              Getting Started
             </div>
           </div>
         </a>

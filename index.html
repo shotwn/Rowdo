@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#index" class="md-skip">
+        <a href="#getting-started" class="md-skip">
           Skip to content
         </a>
       
@@ -93,7 +93,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Index
+              Getting Started
             
           </span>
         </div>
@@ -205,12 +205,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Index
+          Getting Started
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="." class="md-nav__link md-nav__link--active">
-        Index
+        Getting Started
       </a>
       
         
@@ -228,8 +228,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-is-rowdo" class="md-nav__link">
-    What is rowdo
+  <a href="#how-rowdo-works" class="md-nav__link">
+    How Rowdo Works
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-rowdo" class="md-nav__link">
+    Download Rowdo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-download-task" class="md-nav__link">
+    Creating a Download Task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deleting-a-downloaded-file" class="md-nav__link">
+    Deleting a Downloaded File
   </a>
   
 </li>
@@ -334,8 +362,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-is-rowdo" class="md-nav__link">
-    What is rowdo
+  <a href="#how-rowdo-works" class="md-nav__link">
+    How Rowdo Works
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-rowdo" class="md-nav__link">
+    Download Rowdo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-download-task" class="md-nav__link">
+    Creating a Download Task
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deleting-a-downloaded-file" class="md-nav__link">
+    Deleting a Downloaded File
   </a>
   
 </li>
@@ -353,9 +409,74 @@
               
                 
                 
-                <h1 id="index">Index<a class="headerlink" href="#index" title="Permanent link">⚓︎</a></h1>
-<h2 id="what-is-rowdo">What is rowdo<a class="headerlink" href="#what-is-rowdo" title="Permanent link">⚓︎</a></h2>
-<p>Rowdo is a basic SQL polling file downloader.</p>
+                <h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">⚓︎</a></h1>
+<h3 id="how-rowdo-works">How Rowdo Works<a class="headerlink" href="#how-rowdo-works" title="Permanent link">⚓︎</a></h3>
+<p>Rowdo polls it's <a href="./Reference/Tables/#files-table">files table</a> to track URLs and download them to file system. Results regarding the download operation are also depicted this table.</p>
+<p>In case of a download error, details are inserted in to the <a href="./Reference/Tables/#error-logs-table">error logs table.</a></p>
+<h3 id="download-rowdo">Download Rowdo<a class="headerlink" href="#download-rowdo" title="Permanent link">⚓︎</a></h3>
+<p>For windows operating systems a pre-packed single file executable is <a href="https://github.com/shotwn/Rowdo/releases/latest">released</a> in github.</p>
+<p>To run rowdo directly as a python script, clone the repository and simply call <code>main.py</code> after installing all the required dependencies in <code>requirements.txt</code>.</p>
+<p>It is highly recommended to use a <code>venv</code> environment.
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">-m</span> <span class="n">venv</span> <span class="n">env</span>
+<span class="p">.\\</span><span class="n">env</span><span class="p">\\</span><span class="n">Scripts</span><span class="p">\\</span><span class="n">activate</span>
+</code></pre></div></p>
+<p>Install all dependencies
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
+</code></pre></div></p>
+<p>Run rowdo
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">main</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div></p>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">⚓︎</a></h3>
+<p>Rowdo uses a global configuration file next to it's main script or executable called <a href="Reference/Config/">config.ini</a>. Minimum required configuration to connect MySQL databases can be found <a href="./Reference/Config/#bare-minimums">here</a>.</p>
+<p>In Windows environments, Rowdo executable can be installed as a <a href="/Reference/Windows%20Specific/#install">service</a>.</p>
+<h3 id="creating-a-download-task">Creating a Download Task<a class="headerlink" href="#creating-a-download-task" title="Permanent link">⚓︎</a></h3>
+<p>To download a file basically <code>INSERT</code> a new row in <a href="./Reference/Tables/#files-table">files table</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">url</span><span class="o">`</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/shotwn/Rowdo/main/assets/Logo.png&#39;</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Operation result will get set to <a href="./Reference/Tables/#status">status field</a>.</p>
+</div>
+<p>You can set a file name or folder/name
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span> <span class="p">(</span>
+    <span class="o">`</span><span class="n">url</span><span class="o">`</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">filename</span><span class="o">`</span>
+<span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span>
+    <span class="s1">&#39;https://raw.githubusercontent.com/shotwn/Rowdo/main/assets/Logo.png&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;logos\\rowdo.png&#39;</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<p>It is also possible to run image resizing on file-by-file basis.
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span> <span class="p">(</span>
+    <span class="o">`</span><span class="n">url</span><span class="o">`</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">resize_mode</span><span class="o">`</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">resize_ratio</span><span class="o">`</span>
+<span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span>
+    <span class="s1">&#39;https://raw.githubusercontent.com/shotwn/Rowdo/main/assets/Logo.png&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.5&#39;</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<p>Using <a href="./Reference/Tables/#passthrough">passthrough</a> resize mode you can format images using PIL library without resizing them.
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span> <span class="p">(</span>
+    <span class="o">`</span><span class="n">url</span><span class="o">`</span><span class="p">,</span>
+    <span class="o">`</span><span class="n">resize_mode</span><span class="o">`</span>
+<span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span>
+    <span class="s1">&#39;https://raw.githubusercontent.com/shotwn/Rowdo/main/assets/Logo.png&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;0&#39;</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<h3 id="deleting-a-downloaded-file">Deleting a Downloaded File<a class="headerlink" href="#deleting-a-downloaded-file" title="Permanent link">⚓︎</a></h3>
+<p>Rowdo can delete files using delete command. After setting a new command value it is important to reset <a href="./Reference/Tables/#status">status field</a>. Unless status is reset to the <a href="./Reference/Tables/#waiting-to-process">initial state</a> new command won't be processed.</p>
+<p>Deleting a downloaded file while keeping the row. Notice how status is reset to <code>0</code>.
+<div class="highlight"><pre><span></span><code><span class="k">UPDATE</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span>
+    <span class="k">SET</span> <span class="o">`</span><span class="n">command</span><span class="o">`</span> <span class="o">=</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="o">`</span><span class="n">status</span><span class="o">`</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+    <span class="k">WHERE</span> <span class="o">`</span><span class="n">rowdo_files</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="o">=</span> <span class="mi">1</span>
+</code></pre></div></p>
                 
               
               
