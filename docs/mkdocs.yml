@@ -1,7 +1,10 @@
 site_name: Rowdo Documentation
+repo_url: https://github.com/shotwn/Rowdo
+repo_name: shotwn/rowdo
 theme:
   name: material
-  logo: assets/Logo.png
+  logo: assets/logo.png
+  favicon: assets/logo.png
   palette:
     - scheme: slate
       primary: black
