@@ -17,7 +17,7 @@ To run rowdo directly as a python script, clone the repository and simply call `
 It is highly recommended to use a `venv` environment.
 ``` powershell
 python -m venv env
-.\\env\\Scripts\\activate
+.\env\Scripts\activate
 ```
 
 Install all dependencies
