@@ -77,16 +77,20 @@ Using [passthrough](./Reference/Tables/#passthrough) resize mode you can format 
 ``` sql
 INSERT INTO `rowdo_files` (
     `url`,
-    `resize_mode`
+    `resize_mode`,
+    `filename`
 )
 VALUES (
     'https://raw.githubusercontent.com/shotwn/Rowdo/main/assets/Logo.png',
-    '0'
+    '0',
+    'logo.jpg'
 )
 ```
 
 ### Deleting a Downloaded File
-Rowdo can delete files using delete command. After setting a new command value it is important to reset [status field](./Reference/Tables/#status). Unless status is reset to the [initial state](./Reference/Tables/#waiting-to-process) new command won't be processed.
+Rowdo can delete files using delete command.
+
+After setting a new command value it is important to reset [status field](./Reference/Tables/#status). Unless status field is set to the [initial state](./Reference/Tables/#waiting-to-process), the new command won't be processed.
 
 Deleting a downloaded file while keeping the row. Notice how status is reset to `0`.
 ``` sql
