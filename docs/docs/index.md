@@ -1,5 +1,29 @@
 # Getting Started
-Rowdo polls it's [files table](./Reference/Tables/#files-table) to fetch file URLs and download them. Results regarding the download operation are also depicted this table.
+### How Rowdo Works
+Rowdo polls it's [files table](./Reference/Tables/#files-table) to track URLs and download them to file system. Results regarding the download operation are also depicted this table.
+
+In case of a download error, details are inserted in to the [error logs table.](./Reference/Tables/#error-logs-table)
+
+### Download Rowdo
+For windows operating systems a pre-packed single file executable is [released](https://github.com/shotwn/Rowdo/releases/latest) in github.
+
+To run rowdo directly as a python script, clone the repository and simply call `main.py` after installing all the required dependencies in `requirements.txt`.
+
+It is highly recommended to use a `venv` environment.
+``` powershell
+python -m venv env
+.\\env\\Scripts\\activate
+```
+
+Install all dependencies
+``` powershell
+pip install -r requirements.txt
+```
+
+Run rowdo
+``` powershell
+python main.py
+```
 
 ### Configuration
 Rowdo uses a global configuration file next to it's main script or executable called [config.ini](Reference/Config.md). Minimum required configuration to connect MySQL databases can be found [here](./Reference/Config/#bare-minimums).
