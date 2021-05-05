@@ -11,6 +11,8 @@
 <a href="https://github.com/shotwn/Rowdo/releases">Download</a>
 ·
 <a href="https://github.com/shotwn/Rowdo/issues">Request Feature</a>
+·
+<a href="https://shotwn.github.io/Rowdo/">Documentation</a>
 <br>
 <br>
 <a href="https://github.com/shotwn/Rowdo/" target="_blank"><img src="https://img.shields.io/badge/Python-3.9-brightgreen"/></a>
