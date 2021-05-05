@@ -1,6 +1,6 @@
 # Configuration
 ## Config.ini
-
+Rowdo uses the `config.ini` file on it's script or executable directory for global configuration parameters.
 ### Fields
 #### Database
 ``` ini
